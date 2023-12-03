@@ -12,5 +12,8 @@ check_wasm32:
 test:
 	cargo test
 
+test/nodejs:
+	node --test
+
 check: lint check_wasm32 test
 
