@@ -38,7 +38,6 @@ fn parse_ip_v4_octet(octet: &str) -> Option<u32> {
 
 #[wasm_bindgen]
 pub fn ipV4ToInt(ip: &str) -> Option<u32> {
-    println!("'ipV4ToInt' was called with {}", ip);
     let octets = parse_out_octets(ip, true)?;
     let mut result = 0u32;
     let octet_shifts: [u8; 4] = [24, 16, 8, 0];
@@ -51,7 +50,6 @@ pub fn ipV4ToInt(ip: &str) -> Option<u32> {
 
 #[wasm_bindgen]
 pub fn intToIpV4(val: u32) -> String {
-    println!("'intToIpV4' was called with {}", val);
     let mut result: Vec<u32> = Vec::new();
     let octet_shifts: [u8; 4] = [24, 16, 8, 0];
     for octet_shift in octet_shifts.iter() {

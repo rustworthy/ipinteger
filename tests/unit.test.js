@@ -3,7 +3,18 @@ const assert = require("node:assert");
 
 const { ipV4ToInt, intToIpV4 } = require("../pkg/nodejs/ipinteger");
 
-test("ipV4ToInt", () => {
+// for performance comparison
+const ipV4ToIntJS = (ip) => {
+  let result = 0;
+  for (const octet of ip.split(".")) {
+    const octet_int = parseInt(octet, 10);
+    if (isNaN(octet_int)) return undefined;
+    result = result * 256 + octet_int;
+  }
+  return result;
+};
+
+test("ipV4ToInt + ipV4ToIntJS", () => {
   const cases = [
     ["0.0.0.0", 0],
     ["0.0.0.1", 1],
@@ -24,12 +35,24 @@ test("ipV4ToInt", () => {
     ["", undefined],
   ];
   for (const [ip, expected] of cases) {
-    const got = ipV4ToInt(ip);
-    assert.equal(got, expected);
+    const res = ipV4ToInt(ip);
+    assert.equal(res, expected, `assert ${res}===${expected} for ${ip}`);
+    const resJS = ipV4ToIntJS(ip);
+    assert.equal(resJS, expected, `assert ${resJS}===${expected} for ${ip}`);
   }
 });
 
-test("intToIpV4", () => {
+// for performance comparison
+const intToIpV4JS = (int) => {
+  const octets = [];
+  for (let i = 0; i < 4; i++) {
+    const octet = (int >> (i * 8)) & 0xff;
+    octets.push(octet);
+  }
+  return octets.reverse().join(".");
+};
+
+test("intToIpV4 + intToIpV4JS", () => {
   const cases = [
     [0, "0.0.0.0"],
     [1, "0.0.0.1"],
@@ -48,7 +71,11 @@ test("intToIpV4", () => {
     [0xffffffff, "255.255.255.255"],
   ];
   for (const [int, expected] of cases) {
-    const got = intToIpV4(int);
-    assert.equal(got, expected);
+    const res = intToIpV4(int);
+    assert.equal(res, expected);
+    const resJS = intToIpV4JS(int);
+    assert.equal(resJS, expected);
   }
 });
+
+module.exports = { ipV4ToIntJS, intToIpV4JS };
